@@ -1,0 +1,136 @@
+/* dyk's own styles, on top of bevel.css. They sit outside any layer, so
+   they win over the library without !important. bevel.css itself is never
+   edited. */
+
+:root {
+  /* A serif every system already has, so nothing is downloaded. */
+  --dyk-serif: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+
+  /* The card is a step lighter than the page in both schemes, so it always
+     sits above it. bevel's grey surface is darker than its page in light
+     and lighter in dark, so the two swap. */
+  --dyk-page: var(--bv-color-surface-alt);
+  --dyk-card: var(--bv-color-surface);
+
+  /* Unlike bevel's raised shadow, which falls below, the card's spreads
+     evenly round every edge. */
+  --dyk-card-shadow: 0 0 8px rgba(31, 35, 40, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dyk-page: var(--bv-color-surface);
+    --dyk-card: var(--bv-color-surface-alt);
+    --dyk-card-shadow: 0 0 8px rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* The card's column fills the screen and the credit sits at the bottom. */
+body {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  background-color: var(--dyk-page);
+}
+
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bv-space-4);
+  inline-size: 100%;
+  max-inline-size: 42rem;
+  margin-inline: auto;
+  padding: var(--bv-space-4);
+}
+
+/* On a phone the card takes up most of the screen, with its text in the
+   middle. */
+.card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--bv-space-7) var(--bv-space-6);
+  background-color: var(--dyk-card);
+  border: 1px solid var(--bv-color-border);
+  border-radius: var(--bv-radius-lg);
+  box-shadow: var(--dyk-card-shadow);
+}
+
+.fact {
+  max-inline-size: none;
+  margin: 0;
+  font-family: var(--dyk-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-wrap: pretty;
+}
+
+.card :where(p) {
+  margin: var(--bv-space-6) 0 0;
+}
+
+/* Full width, so it's easy to reach with a thumb. */
+.next {
+  display: block;
+  inline-size: 100%;
+}
+
+.credit {
+  padding: 0 var(--bv-space-4) var(--bv-space-4);
+  font-size: 0.75rem;
+  color: var(--bv-color-muted);
+  text-align: center;
+}
+
+.credit :where(p) {
+  margin: 0 auto;
+}
+
+.credit :where(a) {
+  color: inherit;
+}
+
+/* On a larger screen the card sits in the middle at a comfortable reading
+   width, and Next moves to its end. */
+@media (min-width: 40rem) {
+  .page {
+    justify-content: center;
+    gap: var(--bv-space-6);
+    padding: var(--bv-space-8) var(--bv-space-6);
+  }
+
+  .card {
+    flex: none;
+    min-block-size: 18rem;
+    padding: 3rem;
+  }
+
+  .fact {
+    font-size: 1.875rem;
+  }
+
+  .next {
+    align-self: flex-end;
+    inline-size: auto;
+    min-inline-size: 10rem;
+  }
+}
+
+/* One quiet entrance, left out when the device asks for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    animation: dyk-enter 240ms ease-out;
+  }
+}
+
+@keyframes dyk-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}

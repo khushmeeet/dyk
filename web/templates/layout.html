@@ -1,0 +1,23 @@
+{{define "top"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}}</title>
+<link rel="stylesheet" href="{{asset "bevel.css"}}">
+<link rel="stylesheet" href="{{asset "app.css"}}">
+<link rel="icon" href="data:,">
+{{- if .Next}}
+<link rel="prefetch" href="/c/{{.Next}}">
+{{- end}}
+{{- if .Refresh}}
+<meta http-equiv="refresh" content="20">
+{{- end}}
+</head>
+<body>
+{{end}}
+
+{{define "bottom"}}
+</body>
+</html>
+{{end}}

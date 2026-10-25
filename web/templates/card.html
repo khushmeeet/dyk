@@ -1,0 +1,12 @@
+{{template "top" .}}
+<main class="page">
+<article class="card">
+<h1 class="fact">Did you know {{.Card.Text}}</h1>
+<p class="more"><a href="{{.Card.ArticleURL}}">Read about {{.Card.Article}} on Wikipedia</a></p>
+</article>
+<a class="btn btn-primary btn-large next" href="{{if .Next}}/c/{{.Next}}{{else}}/{{end}}">Next</a>
+</main>
+<footer class="credit">
+<p>From <a href="{{.Card.SourceURL}}">Wikipedia's Did you know archive</a>, shared under <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license">CC BY-SA 4.0</a></p>
+</footer>
+{{template "bottom" .}}

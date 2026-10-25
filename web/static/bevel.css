@@ -1,0 +1,1911 @@
+/*! bevel.css 0.6.0 */
+/*
+ * bevel.css
+ *
+ * Bootstrap 2.0's look, brought up to date: Helvetica Neue, neutral color,
+ * one blue, and controls lit from above, in light and dark. Built only on
+ * CSS that has been in every major browser for at least 30 months. One
+ * file, no build step, no JavaScript, nothing to download.
+ *
+ * Everything sits in the five bevel.* layers below. Write your app's own CSS
+ * outside any layer and it overrides the library without !important or
+ * specificity tricks.
+ *
+ * Selectors stay at or under one class plus one state (0,2,0). Element and
+ * structural parts of a selector go inside :where() so they add nothing.
+ *
+ * Reference: site/reference.html shows every class, variant and state.
+ */
+
+@layer bevel.reset, bevel.base, bevel.layout, bevel.components, bevel.utilities;
+
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+
+@layer bevel.reset {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+
+  :where(h1, h2, h3, h4, h5, h6, p, ul, ol, dl, dd) {
+    margin: 0;
+  }
+
+  /* An image or video wider than the screen shrinks to fit instead of
+     scrolling the page sideways (WCAG 1.4.10). */
+  :where(img, video) {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+}
+
+
+/* ==========================================================================
+   Tokens
+   Override any of these in your app's own (unlayered) :root rule.
+   ========================================================================== */
+
+@layer bevel.base {
+  /* The page can be shown light or dark, so native parts such as select
+     arrows and scrollbars follow the scheme. */
+  :where(:root) {
+    color-scheme: light dark;
+
+    /* Neutrals */
+    --bv-color-text: #1F2328;
+    --bv-color-muted: #59636E;
+    --bv-color-surface: #FFFFFF;
+    --bv-color-surface-alt: #F5F6F8;
+    --bv-color-stripe: #FAFAFB;
+    --bv-color-field: #FFFFFF;
+    --bv-color-track: #EAECEF;
+    --bv-color-border: #DFE2E6;
+    --bv-color-border-soft: #EBEDF0;
+    --bv-color-border-strong: #8C949E;
+
+    /* Action and focus: one blue for everything you can press or follow */
+    --bv-color-link: #0B65C2;
+    --bv-color-link-hover: #094A8F;
+    --bv-color-primary: #0B65C2;
+    --bv-color-primary-hover: #0A5EB5;
+    --bv-color-primary-active: #094A8F;
+    --bv-color-danger: #C4362E;
+    --bv-color-danger-hover: #B6322A;
+    --bv-color-danger-active: #8F2620;
+    --bv-color-on-accent: #FFFFFF;
+    --bv-color-button: #E6E9ED;
+    --bv-color-button-hover: #E6E9ED;
+    --bv-color-button-active: #D9DEE4;
+    --bv-color-button-border: #C9CED4;
+    --bv-color-focus: #0B65C2;
+
+    /* Navbar: a graphite bar, lit from above */
+    --bv-color-navbar: #1F2328;
+    --bv-color-navbar-top: #2B3036;
+    --bv-color-navbar-current: #16191D;
+    --bv-color-navbar-link: #8C939C;
+    --bv-color-navbar-link-active: #FFFFFF;
+    --bv-color-navbar-focus: #6CB0F5;
+    --bv-color-brand: #FFFFFF;
+
+    /* Grid paper, as in the 2.0 docs, behind the top of a .grid-paper page
+       and in .hero-unit-grid: a line every 20px, the text's line height,
+       and every fifth vertical one darker where two layers of lines meet.
+       Set it to transparent to turn the grid off. */
+    --bv-color-grid: rgba(31, 35, 40, 0.04);
+
+    /* Labels and badges: a tint, with text at 4.5:1 on it */
+    --bv-label-default-bg: #EEF0F2;
+    --bv-label-default-text: #4B535D;
+    --bv-label-success-bg: #E6F4EA;
+    --bv-label-success-text: #1A6E33;
+    --bv-label-warning-bg: #FCF1D6;
+    --bv-label-warning-text: #875200;
+    --bv-label-important-bg: #FDECEA;
+    --bv-label-important-text: #B42318;
+    --bv-label-info-bg: #E7F0FB;
+    --bv-label-info-text: #0B5CAD;
+    --bv-label-inverse-bg: #1F2328;
+    --bv-label-inverse-text: #FFFFFF;
+
+    /* Alerts: paler tints than the labels, the same text colors */
+    --bv-alert-warning-bg: #FDF6E3;
+    --bv-alert-warning-border: #F3E2B5;
+    --bv-alert-warning-text: #875200;
+    --bv-alert-error-bg: #FEF1EF;
+    --bv-alert-error-border: #F7D0CB;
+    --bv-alert-error-text: #B42318;
+    --bv-alert-success-bg: #EDF7F0;
+    --bv-alert-success-border: #CFE8D7;
+    --bv-alert-success-text: #1A6E33;
+    --bv-alert-info-bg: #EEF4FC;
+    --bv-alert-info-border: #CFE0F5;
+    --bv-alert-info-text: #0B5CAD;
+
+    /* Progress bars: each fill 3:1 against the track */
+    --bv-progress-default: #0B65C2;
+    --bv-progress-success: #2E8540;
+    --bv-progress-warning: #B7740F;
+    --bv-progress-danger: #C4362E;
+
+    /* Form errors and code */
+    --bv-color-error: #B42318;
+    --bv-color-error-border: #C4362E;
+    --bv-color-code-bg: #F0F2F4;
+
+    /* Type: Helvetica Neue, as in 2.0, with Helvetica and then Arial where
+       it isn't installed, so nothing is downloaded. The monospace is for
+       code. 14px on a 20px line. */
+    --bv-font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --bv-font-mono: ui-monospace, Menlo, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+    --bv-font-size: 0.875rem;
+    --bv-line-height: 1.25rem;
+
+    /* Spacing */
+    --bv-space-1: 0.25rem;    /* 4px */
+    --bv-space-2: 0.3125rem;  /* 5px */
+    --bv-space-3: 0.5625rem;  /* 9px */
+    --bv-space-4: 0.875rem;   /* 14px */
+    --bv-space-5: 1.125rem;   /* 18px */
+    --bv-space-6: 1.25rem;    /* 20px, gutter */
+    --bv-space-7: 2.25rem;    /* 36px */
+    --bv-space-8: 3.75rem;    /* 60px, above each page section */
+
+    /* Radius */
+    --bv-radius-sm: 3px;
+    --bv-radius: 4px;
+    --bv-radius-lg: 6px;
+    --bv-radius-pill: 9px;
+
+    /* Depth: light comes from above. Raised things have a highlight along
+       their top edge and a soft shadow under them; sunken things a shade
+       along their top inside edge. Buttons have 2.0's gloss, laid over
+       their fill: a default button is white over its top quarter and fades
+       to its grey fill at the bottom; a colored one is lighter at the top
+       and darker at the bottom, and its fill alone behind the middle of
+       the text. The gloss is drawn half again as tall as what it covers,
+       so its stops are at 2/3 scale: 16.67% is a quarter of the way down
+       the face, 66.67% its bottom. Below that it keeps its last color, so
+       a hovered button can slide it up and show that lower part. */
+    --bv-sheen: linear-gradient(#FFFFFF, #FFFFFF 16.67%, rgba(255, 255, 255, 0) 66.67%);
+    --bv-sheen-accent: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 33.33%, rgba(0, 0, 0, 0.12) 66.67%);
+    --bv-shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 1px 2px rgba(31, 35, 40, 0.08);
+    --bv-shadow-button-accent: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 1px 2px rgba(31, 35, 40, 0.18);
+    --bv-shadow-pressed: inset 0 2px 4px rgba(31, 35, 40, 0.15);
+    --bv-shadow-raised: 0 1px 2px rgba(31, 35, 40, 0.06);
+    --bv-shadow-field: inset 0 1px 2px rgba(31, 35, 40, 0.07);
+    --bv-shadow-focus: 0 0 0 3px rgba(11, 101, 194, 0.22);
+    --bv-shadow-focus-error: 0 0 0 3px rgba(196, 54, 46, 0.2);
+    --bv-shadow-navbar: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 0 rgba(0, 0, 0, 0.15), 0 2px 6px rgba(31, 35, 40, 0.2);
+    --bv-shadow-navbar-current: inset 0 2px 6px rgba(0, 0, 0, 0.35);
+    --bv-shadow-well: inset 0 1px 2px rgba(31, 35, 40, 0.06);
+    --bv-shadow-track: inset 0 1px 2px rgba(31, 35, 40, 0.12);
+    --bv-shadow-label: inset 0 0 0 1px rgba(31, 35, 40, 0.06);
+
+    /* Emboss: text pressed into a light surface, or cut out of a dark one */
+    --bv-emboss: 0 1px 0 rgba(255, 255, 255, 0.7);
+    --bv-emboss-dark: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    --bv-color-etch: #FFFFFF;
+    --bv-glow: 0 0 10px rgba(255, 255, 255, 0.35);
+
+    /* Motion: color and background only */
+    --bv-duration-fast: 100ms;
+    --bv-duration: 150ms;
+    --bv-duration-slow: 200ms;
+    --bv-ease: linear;
+  }
+
+  /* Dark: the same roles, following the system setting unless the page
+     sets data-theme="light" on <html>. data-theme="dark" forces them on any
+     system; its block below must stay the same as this one. */
+  @media (prefers-color-scheme: dark) {
+    :where(:root:not([data-theme="light"])) {
+      --bv-color-text: #E4E7EB;
+      --bv-color-muted: #9CA4AE;
+      --bv-color-surface: #1C1F24;
+      --bv-color-surface-alt: #25292F;
+      --bv-color-stripe: #21252A;
+      --bv-color-field: #16191E;
+      --bv-color-track: #32363C;
+      --bv-color-border: #383D44;
+      --bv-color-border-soft: #2D3137;
+      --bv-color-border-strong: #737B85;
+
+      --bv-color-link: #6CB0F5;
+      --bv-color-link-hover: #95C6F7;
+      --bv-color-primary: #1F6BC4;
+      --bv-color-primary-hover: #1D65BA;
+      --bv-color-primary-active: #17539A;
+      --bv-color-danger: #C23A31;
+      --bv-color-danger-hover: #B6362E;
+      --bv-color-danger-active: #922B24;
+      --bv-color-button: #2B2F35;
+      --bv-color-button-hover: #383D44;
+      --bv-color-button-active: #202328;
+      --bv-color-button-border: #43484F;
+      --bv-color-focus: #6CB0F5;
+
+      --bv-label-default-bg: #2C3036;
+      --bv-label-default-text: #B4BBC4;
+      --bv-label-success-bg: #1D2E22;
+      --bv-label-success-text: #86D49A;
+      --bv-label-warning-bg: #322A19;
+      --bv-label-warning-text: #E8C177;
+      --bv-label-important-bg: #35211F;
+      --bv-label-important-text: #F4A59C;
+      --bv-label-info-bg: #1B2B41;
+      --bv-label-info-text: #8EC1F5;
+      --bv-label-inverse-bg: #E4E7EB;
+      --bv-label-inverse-text: #1C1F24;
+
+      --bv-alert-warning-bg: #2B2417;
+      --bv-alert-warning-border: #524423;
+      --bv-alert-warning-text: #E8C177;
+      --bv-alert-error-bg: #2E1D1B;
+      --bv-alert-error-border: #57322E;
+      --bv-alert-error-text: #F4A59C;
+      --bv-alert-success-bg: #1A271F;
+      --bv-alert-success-border: #2B4A34;
+      --bv-alert-success-text: #86D49A;
+      --bv-alert-info-bg: #182537;
+      --bv-alert-info-border: #2A4771;
+      --bv-alert-info-text: #8EC1F5;
+
+      --bv-progress-default: #6CB0F5;
+      --bv-progress-success: #4FA864;
+      --bv-progress-warning: #D9A23F;
+      --bv-progress-danger: #E0645A;
+
+      --bv-color-error: #F4A59C;
+      --bv-color-error-border: #E0645A;
+      --bv-color-code-bg: #2A2E34;
+
+      --bv-color-navbar: #21252A;
+      --bv-color-navbar-top: #2F3339;
+      --bv-color-navbar-current: #15171B;
+      --bv-color-grid: rgba(228, 231, 235, 0.035);
+
+      --bv-sheen: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 66.67%);
+      --bv-sheen-accent: linear-gradient(rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 33.33%, rgba(0, 0, 0, 0.12) 66.67%);
+      --bv-shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.5);
+      --bv-shadow-button-accent: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 2px rgba(0, 0, 0, 0.5);
+      --bv-shadow-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.45);
+      --bv-shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --bv-shadow-field: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+      --bv-shadow-focus: 0 0 0 3px rgba(108, 176, 245, 0.3);
+      --bv-shadow-focus-error: 0 0 0 3px rgba(224, 100, 90, 0.3);
+      --bv-shadow-navbar: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 0 rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
+      --bv-shadow-navbar-current: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+      --bv-shadow-well: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+      --bv-shadow-track: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+      --bv-shadow-label: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+
+      --bv-emboss: none;
+      --bv-emboss-dark: 0 -1px 0 rgba(0, 0, 0, 0.35);
+      --bv-color-etch: rgba(255, 255, 255, 0.04);
+    }
+  }
+
+  :where(:root[data-theme="dark"]) {
+    --bv-color-text: #E4E7EB;
+    --bv-color-muted: #9CA4AE;
+    --bv-color-surface: #1C1F24;
+    --bv-color-surface-alt: #25292F;
+    --bv-color-stripe: #21252A;
+    --bv-color-field: #16191E;
+    --bv-color-track: #32363C;
+    --bv-color-border: #383D44;
+    --bv-color-border-soft: #2D3137;
+    --bv-color-border-strong: #737B85;
+
+    --bv-color-link: #6CB0F5;
+    --bv-color-link-hover: #95C6F7;
+    --bv-color-primary: #1F6BC4;
+    --bv-color-primary-hover: #1D65BA;
+    --bv-color-primary-active: #17539A;
+    --bv-color-danger: #C23A31;
+    --bv-color-danger-hover: #B6362E;
+    --bv-color-danger-active: #922B24;
+    --bv-color-button: #2B2F35;
+    --bv-color-button-hover: #383D44;
+    --bv-color-button-active: #202328;
+    --bv-color-button-border: #43484F;
+    --bv-color-focus: #6CB0F5;
+
+    --bv-label-default-bg: #2C3036;
+    --bv-label-default-text: #B4BBC4;
+    --bv-label-success-bg: #1D2E22;
+    --bv-label-success-text: #86D49A;
+    --bv-label-warning-bg: #322A19;
+    --bv-label-warning-text: #E8C177;
+    --bv-label-important-bg: #35211F;
+    --bv-label-important-text: #F4A59C;
+    --bv-label-info-bg: #1B2B41;
+    --bv-label-info-text: #8EC1F5;
+    --bv-label-inverse-bg: #E4E7EB;
+    --bv-label-inverse-text: #1C1F24;
+
+    --bv-alert-warning-bg: #2B2417;
+    --bv-alert-warning-border: #524423;
+    --bv-alert-warning-text: #E8C177;
+    --bv-alert-error-bg: #2E1D1B;
+    --bv-alert-error-border: #57322E;
+    --bv-alert-error-text: #F4A59C;
+    --bv-alert-success-bg: #1A271F;
+    --bv-alert-success-border: #2B4A34;
+    --bv-alert-success-text: #86D49A;
+    --bv-alert-info-bg: #182537;
+    --bv-alert-info-border: #2A4771;
+    --bv-alert-info-text: #8EC1F5;
+
+    --bv-progress-default: #6CB0F5;
+    --bv-progress-success: #4FA864;
+    --bv-progress-warning: #D9A23F;
+    --bv-progress-danger: #E0645A;
+
+    --bv-color-error: #F4A59C;
+    --bv-color-error-border: #E0645A;
+    --bv-color-code-bg: #2A2E34;
+
+    --bv-color-navbar: #21252A;
+    --bv-color-navbar-top: #2F3339;
+    --bv-color-navbar-current: #15171B;
+    --bv-color-grid: rgba(228, 231, 235, 0.035);
+
+    --bv-sheen: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 66.67%);
+    --bv-sheen-accent: linear-gradient(rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 33.33%, rgba(0, 0, 0, 0.12) 66.67%);
+    --bv-shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.5);
+    --bv-shadow-button-accent: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 2px rgba(0, 0, 0, 0.5);
+    --bv-shadow-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.45);
+    --bv-shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --bv-shadow-field: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+    --bv-shadow-focus: 0 0 0 3px rgba(108, 176, 245, 0.3);
+    --bv-shadow-focus-error: 0 0 0 3px rgba(224, 100, 90, 0.3);
+    --bv-shadow-navbar: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 0 rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
+    --bv-shadow-navbar-current: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+    --bv-shadow-well: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+    --bv-shadow-track: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+    --bv-shadow-label: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+
+    --bv-emboss: none;
+    --bv-emboss-dark: 0 -1px 0 rgba(0, 0, 0, 0.35);
+    --bv-color-etch: rgba(255, 255, 255, 0.04);
+  }
+
+  /* A forced scheme turns native parts such as select arrows to match. */
+  :where(:root[data-theme="light"]) {
+    color-scheme: light;
+  }
+
+  :where(:root[data-theme="dark"]) {
+    color-scheme: dark;
+  }
+}
+
+
+/* ==========================================================================
+   Base: text
+   ========================================================================== */
+
+@layer bevel.base {
+  /* 20px lines at 14px, as a ratio rather than a length, so text an app sets
+     larger keeps proportional leading instead of inheriting a fixed 20px.
+     Long words, paths and hashes break before they widen the page. */
+  :where(body) {
+    margin: 0;
+    font-family: var(--bv-font-sans);
+    font-size: var(--bv-font-size);
+    line-height: 1.4286;
+    color: var(--bv-color-text);
+    overflow-wrap: break-word;
+    background-color: var(--bv-color-surface);
+  }
+
+  /* About 70 characters a line at any text size. */
+  :where(p) {
+    max-inline-size: 56ch;
+    margin-block: 0 var(--bv-space-3);
+  }
+
+  /* Every link keeps a faint underline, so it doesn't rely on color alone:
+     the link blue is under 3:1 against body text (WCAG 1.4.1). It sits a
+     little below the letters, clear of their descenders. Navbar links, the
+     brand and link buttons turn it off. */
+  :where(a) {
+    color: var(--bv-color-link);
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    text-underline-offset: 0.2em;
+    transition: color var(--bv-duration) var(--bv-ease);
+  }
+
+  /* Hover styles only where there's a pointer that hovers: on touch, :hover
+     sticks after a tap until the next tap elsewhere. */
+  @media (hover: hover) {
+    :where(a:hover) {
+      color: var(--bv-color-link-hover);
+      text-decoration-color: currentColor;
+    }
+  }
+
+  /* One focus ring for everything that can take focus. Components that need
+     it inside their own box change only the offset. */
+  :where(:focus-visible) {
+    outline: 2px solid var(--bv-color-focus);
+    outline-offset: 2px;
+  }
+
+  /* A heading sits half a line above what it introduces and a full line below
+     whatever came before it, so it always reads with the block under it. At
+     the top of a column, alert or well there's nothing above it, so it gets
+     no space there and lines up with its neighbours. */
+  :where(h1, h2, h3, h4, h5, h6) {
+    margin-block: 0 var(--bv-space-3);
+    font-weight: 600;
+    color: var(--bv-color-text);
+  }
+
+  :where(h1, h2, h3, h4, h5, h6):where(:not(:first-child)) {
+    margin-block-start: var(--bv-space-5);
+  }
+
+  /* Large text looks loose at the default spacing; a little negative
+     tracking closes it. */
+  :where(h1) {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    letter-spacing: -0.015em;
+  }
+
+  /* A section label, as on a printed form: small capitals, tracked out,
+     with more room above it than other headings get, since it starts a
+     new part of the page. */
+  :where(h2) {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  :where(h2):where(:not(:first-child)) {
+    margin-block-start: var(--bv-space-7);
+  }
+
+  /* A dotted leader runs from the label to the end of the line, where the
+     subtitle sits, as a count or a date. Only when the heading is plain
+     text and a subtitle: a heading with no subtitle, or other markup
+     inside, keeps ordinary flow, so it still follows text-align. */
+  :where(h2:has(> small):not(:has(> :not(small)))) {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+  }
+
+  :where(h2:has(> small):not(:has(> :not(small))))::after {
+    flex: 1;
+    order: 1;
+    align-self: center;
+    min-inline-size: var(--bv-space-5);
+    content: "";
+    border-block-end: 1px dotted var(--bv-color-border-strong);
+  }
+
+  :where(h3) { font-size: 1rem; line-height: 1.5rem; }
+  :where(h4) { font-size: 0.875rem; line-height: 1.25rem; }
+  :where(h5) { font-size: 0.8125rem; line-height: 1.25rem; }
+
+  :where(h6) {
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    color: var(--bv-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Outside headings, small keeps the surrounding size, as in 2.0. Before
+     the subtitle rules below: all are zero specificity, so the later wins. */
+  :where(small) {
+    font-size: 100%;
+  }
+
+  /* Line height 1, so the smaller text sitting lower on the heading's line
+     doesn't make that line taller: a heading with a subtitle is as tall as
+     one without. The tracking is set for the heading's size, not the
+     subtitle's. */
+  :where(h1 small, h2 small, h3 small) {
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: normal;
+    color: var(--bv-color-muted);
+  }
+
+  :where(h3 small) {
+    font-size: 0.875rem;
+  }
+
+  /* At the leader's far end, in the label's size but not its capitals. */
+  :where(h2 small) {
+    order: 2;
+    font-size: 0.8125rem;
+    text-transform: none;
+  }
+
+  :where(.lead) {
+    margin-block-end: var(--bv-space-5);
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  :where(strong, b) {
+    font-weight: 600;
+  }
+
+  :where(code, pre) {
+    font-family: var(--bv-font-mono);
+  }
+
+  /* line-height 1 keeps a line with inline code at 20px: the mono font's
+     taller metrics would otherwise stretch it in Firefox and WebKit. Inside
+     pre, the pre's own line height still sets each line. */
+  :where(code) {
+    padding: 0.125rem 0.3125rem;
+    font-size: 0.8125rem;
+    line-height: 1;
+    color: var(--bv-color-text);
+    background-color: var(--bv-color-code-bg);
+    border-radius: var(--bv-radius-sm);
+  }
+
+  :where(pre) {
+    display: block;
+    padding: 0.75rem 1rem;
+    margin-block: 0 var(--bv-space-3);
+    font-size: 0.8125rem;
+    line-height: var(--bv-line-height);
+    color: var(--bv-color-text);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background-color: var(--bv-color-surface-alt);
+    border-radius: var(--bv-radius);
+  }
+
+  :where(pre code) {
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+    background-color: transparent;
+  }
+
+  /* 2.0's etched line: a rule over a highlight. */
+  :where(hr) {
+    margin-block: var(--bv-space-5);
+    margin-inline: 0;
+    border: 0;
+    border-block-start: 1px solid var(--bv-color-border);
+    border-block-end: 1px solid var(--bv-color-etch);
+  }
+}
+
+
+/* ==========================================================================
+   Base: form controls
+   A bare field already looks right; classes add grouping, help and errors.
+   ========================================================================== */
+
+@layer bevel.base {
+  :where(label) {
+    display: block;
+    margin-block-end: var(--bv-space-2);
+    font-size: var(--bv-font-size);
+    font-weight: 500;
+    line-height: var(--bv-line-height);
+    color: var(--bv-color-text);
+  }
+
+  /* A fieldset groups controls, such as a set of radios, without drawing a
+     box; its legend reads like a label. */
+  :where(fieldset) {
+    min-inline-size: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+
+  :where(legend) {
+    padding: 0;
+    margin-block-end: var(--bv-space-2);
+    font-size: var(--bv-font-size);
+    font-weight: 500;
+    line-height: var(--bv-line-height);
+    color: var(--bv-color-text);
+  }
+
+  :where(
+    input:not([type]),
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="number"],
+    input[type="url"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="month"],
+    input[type="week"],
+    input[type="time"],
+    select,
+    textarea
+  ) {
+    display: block;
+    width: 100%;
+    max-width: 17.5rem;
+    height: 1.875rem;
+    padding: 0.25rem 0.5rem;
+    margin: 0;
+    font-family: inherit;
+    font-size: var(--bv-font-size);
+    line-height: var(--bv-line-height);
+    color: var(--bv-color-text);
+    background-color: var(--bv-color-field);
+    border: 1px solid var(--bv-color-border-strong);
+    border-radius: var(--bv-radius-sm);
+    box-shadow: var(--bv-shadow-field);
+    transition:
+      border-color var(--bv-duration-slow) var(--bv-ease),
+      box-shadow var(--bv-duration-slow) var(--bv-ease);
+  }
+
+  /* The native arrow stays. */
+  :where(select) {
+    padding-block: 0.1875rem;
+  }
+
+  /* A list box shows its rows, not one 30px line of them. */
+  :where(select[multiple], select[size]) {
+    height: auto;
+  }
+
+  :where(textarea) {
+    height: auto;
+    min-height: 5.625rem;
+  }
+
+  /* Not yet Widely available; browsers without it keep their own resizing. */
+  @supports (resize: vertical) {
+    :where(textarea) {
+      resize: vertical;
+    }
+  }
+
+  :where(input, textarea)::placeholder {
+    color: var(--bv-color-muted);
+    opacity: 1;
+  }
+
+  :where(input, select, textarea):where(:disabled, [readonly]) {
+    background-color: var(--bv-color-surface-alt);
+    border-color: var(--bv-color-border);
+  }
+
+  :where(input, select, textarea):where(:disabled) {
+    cursor: not-allowed;
+  }
+
+  /* Text fields only, so checkboxes and submit inputs keep the focus ring.
+     The border and a soft glow around it replace the outline; a transparent
+     outline still shows in forced-colors mode, where shadows are dropped. */
+  :where(
+    input:not([type]),
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="number"],
+    input[type="url"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="month"],
+    input[type="week"],
+    input[type="time"],
+    select,
+    textarea
+  ):where(:focus) {
+    border-color: var(--bv-color-focus);
+    outline: 2px solid transparent;
+    outline-offset: 0;
+    box-shadow: var(--bv-shadow-field), var(--bv-shadow-focus);
+  }
+
+  /* Not yet Widely available; browsers without it keep their native tint. */
+  @supports (accent-color: auto) {
+    :where(input[type="checkbox"], input[type="radio"]) {
+      accent-color: var(--bv-color-link);
+    }
+  }
+}
+
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
+@layer bevel.layout {
+  /* Max width is the content width plus 20px of padding each side. */
+  .container {
+    margin-inline: auto;
+    padding-inline: var(--bv-space-6);
+  }
+
+  @media (width >= 768px) {
+    .container { max-width: 764px; }
+  }
+
+  @media (width >= 980px) {
+    .container { max-width: 980px; }
+  }
+
+  @media (width >= 1200px) {
+    .container { max-width: 1210px; }
+  }
+
+  /* Equal columns, as many as fit at 220px or wider. A row ends with one
+     rhythm line, like a table or an alert; see Utilities for why that holds
+     whatever the columns end with. */
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: var(--bv-space-5) var(--bv-space-6);
+    margin-block-end: var(--bv-space-5);
+  }
+
+  /* Fixed counts from 768px up; one column below. At the 940px container
+     these give 2.0's span6, span4 and span3 widths. */
+  .cols-2,
+  .cols-3,
+  .cols-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (width >= 768px) {
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  .section {
+    padding-block-start: var(--bv-space-8);
+  }
+
+  .section:first-child {
+    padding-block-start: var(--bv-space-5);
+  }
+
+  /* Grid paper on <body>, as on the 2.0 docs' pages: a 320px band under
+     the 40px navbar, fading into the page over its last 120px, so it sits
+     behind a page's opening and never behind its text. Opt in, for the
+     page that opens an app; the rest stay plain. */
+  .grid-paper {
+    background-image:
+      linear-gradient(transparent 200px, var(--bv-color-surface) 320px),
+      repeating-linear-gradient(90deg, var(--bv-color-grid) 0 1px, transparent 1px 100px),
+      repeating-linear-gradient(90deg, var(--bv-color-grid) 0 1px, transparent 1px 20px),
+      repeating-linear-gradient(var(--bv-color-grid) 0 1px, transparent 1px 20px);
+    background-repeat: no-repeat;
+    background-position: 0 2.5rem;
+    background-size: 100% 320px;
+  }
+
+  .page-header {
+    padding-block-end: 1.0625rem;
+    margin-block: var(--bv-space-5);
+    border-block-end: 1px solid var(--bv-color-border);
+  }
+
+  /* The header's padding and rule set the space around its title. */
+  .page-header :where(h1, h2, h3, h4, h5, h6) {
+    margin: 0;
+  }
+
+  .page-header :where(h1) {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+
+/* ==========================================================================
+   Navbar
+   ========================================================================== */
+
+@layer bevel.components {
+  /* The first thing in the page: off-screen until it takes keyboard focus,
+     then over the top-left of the bar, so keyboard users can jump past the
+     navbar to the page's main content. */
+  .skip-link {
+    position: absolute;
+    inset-block-start: 0.375rem;
+    inset-inline-start: -999rem;
+    z-index: 1031;
+    padding: var(--bv-space-1) 0.625rem;
+    color: var(--bv-color-link);
+    background-color: var(--bv-color-surface);
+    border: 1px solid var(--bv-color-border-strong);
+    border-radius: var(--bv-radius);
+  }
+
+  .skip-link:focus {
+    inset-inline-start: var(--bv-space-6);
+  }
+
+  /* A graphite bar, lighter at the top, with a highlight along its top
+     edge and a shadow on the page under it. */
+  .navbar-inner {
+    min-height: 2.5rem;
+    background-color: var(--bv-color-navbar);
+    background-image: linear-gradient(var(--bv-color-navbar-top), var(--bv-color-navbar));
+    box-shadow: var(--bv-shadow-navbar);
+  }
+
+  /* Stays at the top while the page scrolls under it, as in the 2.0 docs.
+     Below 768px the links wrap onto more rows, so the bar scrolls away
+     instead of covering the top of a small screen. */
+  @media (width >= 768px) {
+    .navbar-sticky {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 1030;
+    }
+
+    /* Anchor jumps and keyboard focus stop below the bar, never under it
+       (WCAG 2.4.11). */
+    :where(html:has(.navbar-sticky)) {
+      scroll-padding-block-start: calc(2.5rem + var(--bv-space-5));
+    }
+  }
+
+  .navbar .container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  /* A button in a nav, such as a light and dark switch, looks like a link. */
+  .nav > :where(a, button:not([hidden])) {
+    display: block;
+    padding: 0.625rem 0.625rem 0.6875rem;
+    font-size: var(--bv-font-size);
+    line-height: 1.1875rem;
+    color: var(--bv-color-navbar-link);
+    text-decoration: none;
+    text-shadow: var(--bv-emboss-dark);
+    white-space: nowrap;
+    transition: color var(--bv-duration) var(--bv-ease);
+  }
+
+  /* Its content is centered, so an icon on its own sits in the middle of
+     the bar rather than on the text's baseline. */
+  .nav > :where(button:not([hidden])) {
+    display: flex;
+    gap: var(--bv-space-2);
+    align-items: center;
+  }
+
+  .nav > :where(button) {
+    margin: 0;
+    font-family: inherit;
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+  }
+
+  @media (hover: hover) {
+    .nav > :where(a, button):hover {
+      color: var(--bv-color-navbar-link-active);
+    }
+  }
+
+  /* The current page sinks into the bar, as a pressed button does, and its
+     text turns white and glows: at 3:1 brighter than the other links, it
+     doesn't rely on hue. A hovered link turns white too. */
+  .nav > :where(a):is(.active, [aria-current="page"]) {
+    color: var(--bv-color-navbar-link-active);
+    text-shadow: var(--bv-glow);
+    background-color: var(--bv-color-navbar-current);
+    box-shadow: var(--bv-shadow-navbar-current);
+  }
+
+  /* Forced colors make every link the same color and drop the tab, so the
+     current page takes the system's selection colors instead. */
+  @media (forced-colors: active) {
+    .nav > :where(a):is(.active, [aria-current="page"]) {
+      color: HighlightText;
+      background-color: Highlight;
+    }
+  }
+
+  /* Keep the ring inside the bar, in a blue that shows on it. */
+  .nav > :where(a, button):focus-visible,
+  .brand:focus-visible {
+    outline-color: var(--bv-color-navbar-focus);
+    outline-offset: -2px;
+  }
+
+  /* 2.0's etched divider: 1px of shadow and 1px of highlight; hidden once
+     links start to wrap. */
+  .divider-vertical {
+    display: none;
+    box-sizing: content-box;
+    width: 1px;
+    margin: 0.625rem var(--bv-space-3);
+    background-color: rgba(0, 0, 0, 0.35);
+    border-inline-end: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  @media (width >= 768px) {
+    .divider-vertical { display: block; }
+  }
+
+  /* Source order picks the side: first in the bar, the brand sits on the
+     left; after the links, it is pushed to the right. As in 2.0, padding on
+     both sides and a negative margin on the outer one keep the text on the
+     content edge while leaving room for the focus ring inside the box. */
+  .brand {
+    display: block;
+    padding-block: 0.5625rem;
+    padding-inline: 1.25rem;
+    margin-inline-start: -1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.375rem;
+    color: var(--bv-color-brand);
+    text-decoration: none;
+    text-shadow: var(--bv-emboss-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .nav ~ .brand {
+    margin-inline: auto -1.25rem;
+  }
+
+  /* Takes the free space and sets its links at the far end, which pushes the
+     group, and everything after it, to the right. Growing rather than an
+     auto margin leaves a brand after it flush against the links, and still
+     pushed right when it wraps onto a row of its own. */
+  .nav-end {
+    flex-grow: 1;
+    justify-content: flex-end;
+  }
+}
+
+
+/* ==========================================================================
+   Buttons
+   Variants and sizes only reassign the --bv-btn-* variables.
+   ========================================================================== */
+
+@layer bevel.components {
+  .btn {
+    --bv-btn-color: var(--bv-color-text);
+    --bv-btn-bg: var(--bv-color-button);
+    --bv-btn-bg-hover: var(--bv-color-button-hover);
+    --bv-btn-bg-active: var(--bv-color-button-active);
+    --bv-btn-border: var(--bv-color-button-border);
+    --bv-btn-sheen: var(--bv-sheen);
+    --bv-btn-shadow: var(--bv-shadow-button);
+    --bv-btn-emboss: var(--bv-emboss);
+    --bv-btn-padding: 0.25rem 0.75rem;
+    --bv-btn-font-size: var(--bv-font-size);
+    --bv-btn-line-height: var(--bv-line-height);
+    --bv-btn-radius: var(--bv-radius);
+
+    display: inline-flex;
+    gap: 0.375rem;
+    align-items: center;
+    justify-content: center;
+    padding: var(--bv-btn-padding);
+    margin: 0;
+    font-family: inherit;
+    font-size: var(--bv-btn-font-size);
+    font-weight: 500;
+    line-height: var(--bv-btn-line-height);
+    color: var(--bv-btn-color);
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    text-shadow: var(--bv-btn-emboss);
+    cursor: pointer;
+    background-color: var(--bv-btn-bg);
+    background-image: var(--bv-btn-sheen);
+    background-repeat: no-repeat;
+    background-size: 100% 150%;
+    border: 1px solid var(--bv-btn-border);
+    border-block-end-color: color-mix(in srgb, var(--bv-btn-border), #000000 12%);
+    border-radius: var(--bv-btn-radius);
+    box-shadow: var(--bv-btn-shadow);
+    transition:
+      background-color var(--bv-duration-fast) var(--bv-ease),
+      background-position var(--bv-duration-fast) var(--bv-ease),
+      box-shadow var(--bv-duration-fast) var(--bv-ease);
+  }
+
+  /* As in 2.0, hover slides the gloss up by half the button's height, so
+     the light top leaves and the darker lower part fills the face; the
+     fill changes under it at the same pace. The gloss covers the whole
+     face at every point of the slide, so nothing wipes across it either
+     way. Pointers that hover only: on touch it would stick after a tap. */
+  @media (hover: hover) {
+    .btn:hover {
+      background-color: var(--bv-btn-bg-hover);
+      background-position: 0 100%;
+    }
+  }
+
+  /* Pressed, or latched down as a toggle: the sheen goes and the face
+     sinks into the page, so the state doesn't rely on color alone. */
+  .btn:is(:active, .active, [aria-pressed="true"]) {
+    background-color: var(--bv-btn-bg-active);
+    background-image: none;
+    box-shadow: var(--bv-shadow-pressed);
+  }
+
+  /* Forced colors drop the shadow and the fill, so a pressed or latched
+     button takes the system's selection colors instead. */
+  @media (forced-colors: active) {
+    .btn:is(:active, .active, [aria-pressed="true"]) {
+      color: HighlightText;
+      background-color: Highlight;
+    }
+  }
+
+  /* Last, so a disabled button never shows hover or press. */
+  .btn:is(:disabled, .disabled, [aria-disabled="true"]) {
+    cursor: not-allowed;
+    background-color: var(--bv-btn-bg);
+    background-image: none;
+    box-shadow: none;
+    opacity: 0.5;
+  }
+
+  .btn-primary,
+  .btn-danger {
+    --bv-btn-color: var(--bv-color-on-accent);
+    --bv-btn-sheen: var(--bv-sheen-accent);
+    --bv-btn-shadow: var(--bv-shadow-button-accent);
+    --bv-btn-emboss: var(--bv-emboss-dark);
+  }
+
+  .btn-primary {
+    --bv-btn-bg: var(--bv-color-primary);
+    --bv-btn-bg-hover: var(--bv-color-primary-hover);
+    --bv-btn-bg-active: var(--bv-color-primary-active);
+    --bv-btn-border: var(--bv-color-primary-hover);
+  }
+
+  .btn-danger {
+    --bv-btn-bg: var(--bv-color-danger);
+    --bv-btn-bg-hover: var(--bv-color-danger-hover);
+    --bv-btn-bg-active: var(--bv-color-danger-active);
+    --bv-btn-border: var(--bv-color-danger-hover);
+  }
+
+  /* Small keeps the 30px default height in a smaller font; large is 40px. */
+  .btn-small {
+    --bv-btn-padding: 0.3125rem 0.625rem;
+    --bv-btn-font-size: 0.75rem;
+    --bv-btn-line-height: 1.125rem;
+  }
+
+  .btn-large {
+    --bv-btn-padding: 0.5625rem 1rem;
+    --bv-btn-font-size: 1rem;
+    --bv-btn-line-height: 1.25rem;
+    --bv-btn-radius: var(--bv-radius-lg);
+  }
+
+  .btn-group {
+    display: inline-flex;
+    vertical-align: middle;
+  }
+
+  .btn-group > :where(.btn + .btn) {
+    margin-inline-start: -1px;
+  }
+
+  .btn-group > :where(.btn:not(:first-child)) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  .btn-group > :where(.btn:not(:last-child)) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* Lift the hovered or focused button so its whole border shows. */
+  .btn-group > :where(.btn):is(:hover, :focus-visible) {
+    z-index: 1;
+  }
+
+  .btn-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    align-items: center;
+    margin-block-end: var(--bv-space-5);
+  }
+}
+
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+@layer bevel.components {
+  .control-group {
+    margin-block-end: var(--bv-space-5);
+  }
+
+  .help-block {
+    display: block;
+    margin-block: var(--bv-space-2) 0;
+    font-size: var(--bv-font-size);
+    line-height: var(--bv-line-height);
+    color: var(--bv-color-muted);
+  }
+
+  .input-block {
+    max-width: none;
+  }
+
+  .input-small {
+    max-width: 5.625rem;
+  }
+
+  /* A field with a fixed prefix or suffix, such as $ or MB. The add-on's
+     place in the markup picks its side, so both 2.x class names do the same
+     thing. The field keeps its own width and gives way on a narrow screen. */
+  .input-prepend,
+  .input-append {
+    display: flex;
+  }
+
+  .input-prepend > :where(input, select),
+  .input-append > :where(input, select) {
+    min-width: 0;
+  }
+
+  /* Over the add-on beside it, so its glow isn't cut off. */
+  .input-prepend > :where(input, select):focus,
+  .input-append > :where(input, select):focus {
+    z-index: 1;
+  }
+
+  /* Square at least, as tall as the field. */
+  .add-on {
+    flex-shrink: 0;
+    min-width: 1.875rem;
+    padding: var(--bv-space-1) var(--bv-space-2);
+    font-size: var(--bv-font-size);
+    line-height: var(--bv-line-height);
+    color: var(--bv-color-muted);
+    text-align: center;
+    text-shadow: var(--bv-emboss);
+    white-space: nowrap;
+    background-color: var(--bv-color-surface-alt);
+    border: 1px solid var(--bv-color-border-strong);
+    border-radius: var(--bv-radius-sm);
+  }
+
+  /* One line between the add-on and the field: the add-on gives up its
+     side, and the joined corners are square. */
+  .add-on:first-child {
+    border-inline-end-width: 0;
+  }
+
+  .add-on:last-child {
+    border-inline-start-width: 0;
+  }
+
+  .input-prepend > :where(:not(:first-child)),
+  .input-append > :where(:not(:first-child)) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  .input-prepend > :where(:not(:last-child)),
+  .input-append > :where(:not(:last-child)) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* An option reads as text, not as a field's label: regular weight. */
+  .checkbox,
+  .radio {
+    display: flex;
+    gap: 0.375rem;
+    align-items: flex-start;
+    width: fit-content;
+    max-width: 100%;
+    margin-block: 0;
+    font-weight: 400;
+  }
+
+  /* 6px, not 2.0's 5px, so stacked controls sit 26px apart, over WCAG
+     2.5.8's 24px. */
+  :is(.checkbox, .radio) + :is(.checkbox, .radio) {
+    margin-block-start: 0.375rem;
+  }
+
+  /* Centre the control on the first line of text. Its size is set, since
+     each engine draws its own: 12px in WebKit, 13px in Chromium, 14px in
+     Firefox. */
+  .checkbox > :where(input),
+  .radio > :where(input) {
+    flex-shrink: 0;
+    width: 0.8125rem;
+    height: 0.8125rem;
+    margin: calc((var(--bv-line-height) - 0.8125rem) / 2) 0 0;
+  }
+
+  .control-group.error :where(label, legend, .help-block) {
+    color: var(--bv-color-error);
+  }
+
+  .control-group.error :where(input:not(.btn), select, textarea),
+  :where(input, select, textarea)[aria-invalid="true"] {
+    color: var(--bv-color-error);
+    border-color: var(--bv-color-error-border);
+  }
+
+  .control-group.error :where(input:not(.btn):focus, select:focus, textarea:focus),
+  :where(input, select, textarea)[aria-invalid="true"]:focus {
+    border-color: var(--bv-color-error-border);
+    box-shadow: var(--bv-shadow-field), var(--bv-shadow-focus-error);
+  }
+
+  /* The error alert's tint, so the text keeps 4.5:1 on it. */
+  .control-group.error :where(.add-on) {
+    color: var(--bv-alert-error-text);
+    background-color: var(--bv-alert-error-bg);
+    border-color: var(--bv-color-error-border);
+  }
+
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bv-space-2);
+    align-items: center;
+    padding: 1.0625rem 1.25rem 1.125rem;
+    margin-block: var(--bv-space-5);
+    background-color: var(--bv-color-surface-alt);
+    border-block-start: 1px solid var(--bv-color-border);
+    border-radius: var(--bv-radius);
+    box-shadow: inset 0 1px 0 var(--bv-color-etch);
+  }
+}
+
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+@layer bevel.components {
+  /* A rule under the head and hairlines between rows; no outer frame. */
+  .table {
+    --bv-table-cell-padding: 0.5rem;
+
+    width: 100%;
+    margin-block-end: var(--bv-space-5);
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table :where(th, td) {
+    padding: var(--bv-table-cell-padding);
+    font-size: var(--bv-font-size);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--bv-line-height);
+    text-align: start;
+    vertical-align: middle;
+    border-block-start: 1px solid var(--bv-color-border-soft);
+  }
+
+  .table :where(th) {
+    font-weight: 600;
+  }
+
+  /* Column heads are labels, as h2 is: small tracked capitals in the
+     muted color, so the figures under them lead. */
+  .table :where(thead th) {
+    font-size: 0.75rem;
+    color: var(--bv-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    vertical-align: bottom;
+    border-block-end: 1px solid var(--bv-color-border);
+  }
+
+  /* A right-aligned column holds figures or actions, and neither breaks
+     across lines: a minus sign wrapped away from its amount reads as a
+     different number. */
+  .table .text-right {
+    white-space: nowrap;
+  }
+
+  /* The table's first row, and the first under the head, have no rule
+     above them: the table's and the head's own rules are there. */
+  .table :where(thead, thead + tbody, tbody:first-child, caption + tbody) > :where(tr:first-child) > :where(th, td) {
+    border-block-start: 0;
+  }
+
+  .table :where(tbody th, tbody td) {
+    transition: background-color var(--bv-duration-fast) var(--bv-ease);
+  }
+
+  .table-striped :where(tbody > tr:nth-child(odd)) > :where(th, td) {
+    background-color: var(--bv-color-stripe);
+  }
+
+  /* Higher than the stripe, so hover always wins. Pointers that hover only:
+     on touch, a tapped row would stay grey. */
+  @media (hover: hover) {
+    .table :where(tbody > tr):hover > :where(th, td) {
+      background-color: var(--bv-color-surface-alt);
+    }
+  }
+
+  .table-bordered {
+    border: 1px solid var(--bv-color-border);
+    border-radius: var(--bv-radius);
+  }
+
+  .table-bordered :where(th, td) + :where(th, td) {
+    border-inline-start: 1px solid var(--bv-color-border);
+  }
+
+  /* Round the corner cells too, so stripes and hover stay inside the edge. */
+  .table-bordered :where(thead, tbody:first-child, caption + tbody) > :where(tr:first-child) > :where(:first-child) {
+    border-start-start-radius: calc(var(--bv-radius) - 1px);
+  }
+
+  .table-bordered :where(thead, tbody:first-child, caption + tbody) > :where(tr:first-child) > :where(:last-child) {
+    border-start-end-radius: calc(var(--bv-radius) - 1px);
+  }
+
+  .table-bordered :where(tbody:last-child, tfoot:last-child) > :where(tr:last-child) > :where(:first-child) {
+    border-end-start-radius: calc(var(--bv-radius) - 1px);
+  }
+
+  .table-bordered :where(tbody:last-child, tfoot:last-child) > :where(tr:last-child) > :where(:last-child) {
+    border-end-end-radius: calc(var(--bv-radius) - 1px);
+  }
+
+  .table-condensed {
+    --bv-table-cell-padding: 0.25rem 0.3125rem;
+  }
+}
+
+
+/* ==========================================================================
+   Alerts
+   Variants only reassign the --bv-alert-* variables.
+   ========================================================================== */
+
+@layer bevel.components {
+  /* The 35px end padding leaves room for a close button later. */
+  .alert {
+    --bv-alert-bg: var(--bv-alert-warning-bg);
+    --bv-alert-border: var(--bv-alert-warning-border);
+    --bv-alert-text: var(--bv-alert-warning-text);
+
+    padding-block: 0.625rem;
+    padding-inline: var(--bv-space-4) 2.1875rem;
+    margin-block-end: var(--bv-space-5);
+    font-size: var(--bv-font-size);
+    line-height: var(--bv-line-height);
+    color: var(--bv-alert-text);
+    text-shadow: var(--bv-emboss);
+    background-color: var(--bv-alert-bg);
+    border: 1px solid var(--bv-alert-border);
+    border-radius: var(--bv-radius);
+  }
+
+  .alert-error {
+    --bv-alert-bg: var(--bv-alert-error-bg);
+    --bv-alert-border: var(--bv-alert-error-border);
+    --bv-alert-text: var(--bv-alert-error-text);
+  }
+
+  .alert-success {
+    --bv-alert-bg: var(--bv-alert-success-bg);
+    --bv-alert-border: var(--bv-alert-success-border);
+    --bv-alert-text: var(--bv-alert-success-text);
+  }
+
+  .alert-info {
+    --bv-alert-bg: var(--bv-alert-info-bg);
+    --bv-alert-border: var(--bv-alert-info-border);
+    --bv-alert-text: var(--bv-alert-info-text);
+  }
+
+  .alert-block {
+    padding-block: var(--bv-space-4);
+  }
+
+  .alert-block :where(p) {
+    margin: 0;
+  }
+
+  .alert-block :where(p + p) {
+    margin-block-start: var(--bv-space-3);
+  }
+
+  .alert-heading {
+    margin-block-end: var(--bv-space-1);
+    color: inherit;
+  }
+}
+
+
+/* ==========================================================================
+   Labels and badges
+   Badges share the label's --bv-label-* variables, so one variant class
+   covers both.
+   ========================================================================== */
+
+@layer bevel.components {
+  /* A tint and its text, nothing more: 18px tall, so a chip fits a line. */
+  .label,
+  .badge {
+    --bv-label-bg: var(--bv-label-default-bg);
+    --bv-label-text: var(--bv-label-default-text);
+
+    display: inline-block;
+    padding: 0.0625rem 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1rem;
+    color: var(--bv-label-text);
+    white-space: nowrap;
+    vertical-align: middle;
+    background-color: var(--bv-label-bg);
+    border-radius: var(--bv-radius-sm);
+    box-shadow: var(--bv-shadow-label);
+  }
+
+  .badge {
+    padding: 0.0625rem 0.5rem;
+    font-variant-numeric: tabular-nums;
+    border-radius: var(--bv-radius-pill);
+  }
+
+  .label-success,
+  .badge-success {
+    --bv-label-bg: var(--bv-label-success-bg);
+    --bv-label-text: var(--bv-label-success-text);
+  }
+
+  .label-warning,
+  .badge-warning {
+    --bv-label-bg: var(--bv-label-warning-bg);
+    --bv-label-text: var(--bv-label-warning-text);
+  }
+
+  .label-important,
+  .badge-important {
+    --bv-label-bg: var(--bv-label-important-bg);
+    --bv-label-text: var(--bv-label-important-text);
+  }
+
+  .label-info,
+  .badge-info {
+    --bv-label-bg: var(--bv-label-info-bg);
+    --bv-label-text: var(--bv-label-info-text);
+  }
+
+  .label-inverse,
+  .badge-inverse {
+    --bv-label-bg: var(--bv-label-inverse-bg);
+    --bv-label-text: var(--bv-label-inverse-text);
+  }
+}
+
+
+/* ==========================================================================
+   Hero unit
+   Opt in: nothing is styled until a page uses the class.
+   ========================================================================== */
+
+@layer bevel.components {
+  /* Below 768px, a 20px inset and the page header's title size, so the
+     heading still fits a 320px screen. 2.0 had no small-screen hero. */
+  .hero-unit {
+    padding: var(--bv-space-6);
+    margin-block-end: 1.875rem;
+    background-color: var(--bv-color-surface-alt);
+    border-radius: var(--bv-radius-lg);
+  }
+
+  /* Half a line under the heading, as anywhere else, so its descenders
+     don't sit on the text below. */
+  .hero-unit :where(h1) {
+    margin-block: 0 var(--bv-space-3);
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  /* As in a well, the padding alone sets the space inside, so the space
+     under the last line matches the space over the first. */
+  .hero-unit > :where(:last-child) {
+    margin-block-end: 0;
+  }
+
+  .hero-unit :where(p) {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  @media (width >= 768px) {
+    .hero-unit {
+      padding: var(--bv-space-8);
+    }
+
+    .hero-unit :where(h1) {
+      font-size: 2.75rem;
+      line-height: 3.5rem;
+    }
+  }
+
+  /* The grid paper on the page color, edge to edge: a line every 20px and
+     every fifth vertical one darker. The edge is an inset shadow, not a
+     border, so the box keeps its size. */
+  .hero-unit-grid {
+    background-color: var(--bv-color-surface);
+    background-image:
+      repeating-linear-gradient(90deg, var(--bv-color-grid) 0 1px, transparent 1px 100px),
+      repeating-linear-gradient(90deg, var(--bv-color-grid) 0 1px, transparent 1px 20px),
+      repeating-linear-gradient(var(--bv-color-grid) 0 1px, transparent 1px 20px);
+    box-shadow: inset 0 0 0 1px var(--bv-color-border), var(--bv-shadow-raised);
+  }
+
+  /* On a .grid-paper page the hero drops its own paper and edge and sits
+     on the page's, as the 2.0 docs' masthead did: two grids that don't
+     line up would show a seam. */
+  .grid-paper :where(.hero-unit-grid) {
+    background: none;
+    box-shadow: none;
+  }
+}
+
+
+/* ==========================================================================
+   Pagination
+   ========================================================================== */
+
+@layer bevel.components {
+  /* Each link a 36px box, two rhythm lines, joined into one strip that wraps
+     on a narrow screen. Like a table, it ends with one rhythm line and has
+     none above, where 2.0 had both. */
+  .pagination {
+    margin-block-end: var(--bv-space-5);
+  }
+
+  .pagination :where(ul) {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: var(--bv-space-1);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .pagination :where(li + li) {
+    margin-inline-start: -1px;
+  }
+
+  .pagination :where(li) > :where(a, span) {
+    display: block;
+    padding: 0 0.875rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 2.125rem;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: var(--bv-color-surface);
+    border: 1px solid var(--bv-color-border);
+    box-shadow: var(--bv-shadow-raised);
+    transition: background-color var(--bv-duration-fast) var(--bv-ease);
+  }
+
+  .pagination :where(li:first-child) > :where(a, span) {
+    border-start-start-radius: var(--bv-radius);
+    border-end-start-radius: var(--bv-radius);
+  }
+
+  .pagination :where(li:last-child) > :where(a, span) {
+    border-start-end-radius: var(--bv-radius);
+    border-end-end-radius: var(--bv-radius);
+  }
+
+  @media (hover: hover) {
+    .pagination :where(li > a:hover) {
+      background-color: var(--bv-color-surface-alt);
+    }
+  }
+
+  /* Over its neighbours, and over the current page, so the whole ring
+     shows. */
+  .pagination :where(li > a:focus-visible) {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* A page you can't go to, such as Previous on the first page, or a gap
+     between page numbers: a span, or a link marked disabled. */
+  .pagination :where(li > span, .disabled > a, li > a[aria-disabled="true"]) {
+    color: var(--bv-color-muted);
+    cursor: default;
+    background-color: var(--bv-color-surface);
+  }
+
+  /* The current page is filled and sunk in, so it doesn't rely on hue
+     alone. Over the next page, so its whole edge shows. */
+  .pagination :where(.active > a, .active > span, li > [aria-current="page"]) {
+    position: relative;
+    z-index: 1;
+    color: var(--bv-color-on-accent);
+    text-shadow: var(--bv-emboss-dark);
+    cursor: default;
+    background-color: var(--bv-color-primary);
+    border-color: var(--bv-color-primary-active);
+    box-shadow: var(--bv-shadow-pressed);
+  }
+
+  /* Forced colors drop the fill, so the current page takes the system's
+     selection colors, and a page you can't go to reads as disabled. */
+  @media (forced-colors: active) {
+    .pagination :where(li > span, .disabled > a, li > a[aria-disabled="true"]) {
+      color: GrayText;
+    }
+
+    .pagination :where(.active > a, .active > span, li > [aria-current="page"]) {
+      color: HighlightText;
+      background-color: Highlight;
+    }
+  }
+}
+
+/* ==========================================================================
+   Progress bars
+   Variants only reassign the --bv-progress-* variables.
+   ========================================================================== */
+
+@layer bevel.components {
+  /* A thin rounded track; the bar's width, set inline, is the value. At
+     least as wide as a small field, so it keeps its size in a table column
+     with nothing else in it. */
+  .progress {
+    --bv-progress-color: var(--bv-progress-default);
+
+    min-inline-size: 5.625rem;
+    height: 0.5rem;
+    margin-block-end: var(--bv-space-5);
+    overflow: hidden;
+    background-color: var(--bv-color-track);
+    border-radius: var(--bv-radius-sm);
+    box-shadow: var(--bv-shadow-track);
+  }
+
+  /* Empty until the page sets a width. 2.0 also eased the width; that moves
+     layout, and a server-rendered page never changes it anyway. */
+  .progress :where(.bar) {
+    width: 0;
+    height: 100%;
+    background-color: var(--bv-progress-color);
+    background-image: var(--bv-sheen-accent);
+    background-size: 100% 150%;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  /* Diagonal stripes over the fill, 16px apart. */
+  .progress-striped :where(.bar) {
+    background-image:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.25) 25%, transparent 25% 50%, rgba(255, 255, 255, 0.25) 50% 75%, transparent 75%),
+      var(--bv-sheen-accent);
+    background-size: 16px 16px, 100% 150%;
+  }
+
+  /* Forced colors paint the track and the bar the same Canvas color, so
+     the bar takes the selection color and the track gets an edge. */
+  @media (forced-colors: active) {
+    .progress {
+      border: 1px solid CanvasText;
+    }
+
+    .progress :where(.bar) {
+      background-color: Highlight;
+    }
+  }
+
+  /* bevel's one looping animation, for work under way. Reduced motion
+     stops it, in Utilities. */
+  @keyframes bv-progress-stripes {
+    from { background-position: 0 0; }
+    to { background-position: 16px 0; }
+  }
+
+  .progress.active :where(.bar) {
+    animation: bv-progress-stripes 2s var(--bv-ease) infinite;
+  }
+
+  .progress-success {
+    --bv-progress-color: var(--bv-progress-success);
+  }
+
+  .progress-warning {
+    --bv-progress-color: var(--bv-progress-warning);
+  }
+
+  .progress-danger {
+    --bv-progress-color: var(--bv-progress-danger);
+  }
+
+  /* In a table the row sets the spacing. */
+  .table :where(.progress) {
+    margin-block-end: 0;
+  }
+}
+
+
+/* ==========================================================================
+   Stats
+   ========================================================================== */
+
+@layer bevel.components {
+  /* A big figure with a small label above it, for the numbers a home page
+     opens with: a <dl>, with each dt and dd pair in a div when the list is
+     also a .row. The figure is the h1's size at the lead's weight, two
+     rhythm lines tall. */
+  .stats {
+    margin-block-end: var(--bv-space-5);
+  }
+
+  /* A label, as a table's column head is, over the figure. */
+  .stats :where(dt) {
+    font-size: 0.75rem;
+    line-height: var(--bv-line-height);
+    color: var(--bv-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .stats :where(dd) {
+    font-size: 1.875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 2.25rem;
+    letter-spacing: -0.01em;
+    color: var(--bv-color-text);
+  }
+
+  /* A unit or the rest of a fraction, as in a heading's subtitle. */
+  .stats :where(dd small) {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    color: var(--bv-color-muted);
+  }
+}
+
+
+/* ==========================================================================
+   Wells and empty states
+   ========================================================================== */
+
+@layer bevel.components {
+  /* 2.0's inset panel. Its last block drops its bottom margin, so the
+     padding alone sets the space inside. */
+  .well {
+    padding: 1.1875rem;
+    margin-block-end: var(--bv-space-5);
+    background-color: var(--bv-color-surface-alt);
+    border: 1px solid var(--bv-color-border-soft);
+    border-radius: var(--bv-radius-lg);
+    box-shadow: var(--bv-shadow-well);
+  }
+
+  .well > :where(:last-child) {
+    margin-block-end: 0;
+  }
+
+  /* In place of a list with nothing in it: what would be here, and how to
+     add the first one. A dashed edge marks a space waiting to be filled.
+     Two rhythm lines above and below, border included. */
+  .well-empty {
+    padding-block: calc(var(--bv-space-7) - 1px);
+    color: var(--bv-color-muted);
+    text-align: center;
+    background-color: transparent;
+    border: 1px dashed var(--bv-color-border);
+    box-shadow: none;
+  }
+
+  .well-empty :where(p) {
+    margin-inline: auto;
+  }
+}
+
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+@layer bevel.utilities {
+  .muted {
+    color: var(--bv-color-muted);
+  }
+
+  /* A right-aligned paragraph drops the line-length cap, so its text still
+     reaches the end of the line. */
+  .text-right {
+    max-inline-size: none;
+    text-align: end;
+  }
+
+  /* Wide tables scroll inside their own box instead of the page. */
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .table-scroll :where(th, td) {
+    white-space: nowrap;
+  }
+
+  /* Read by screen readers, never shown: a label the page already makes
+     clear, or the words for an icon-only button. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* A row's own margin sets the space after it, and its gap the space
+     between columns, so a column and the last block in it drop their bottom
+     margins; otherwise a column ending in a table, or a column that is a
+     well, would add a second line. In this layer so it beats component
+     margins. */
+  .row > :where(*),
+  .row > :where(*) > :where(:last-child) {
+    margin-block-end: 0;
+  }
+
+  /* In the last layer so it beats every component transition. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0.01ms;
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+    }
+  }
+}
