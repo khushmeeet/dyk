@@ -123,7 +123,7 @@ Data lives in one SQLite file. HTML and CSS are compiled into the program, so de
 |---|---|
 | Language | Go, standard library only (`net/http`, `html/template`, `embed`) |
 | Database | SQLite, one file, write-ahead logging so reads continue during writes |
-| SQLite driver | mattn/go-sqlite3 (the only third-party dependency) |
+| SQLite driver | modernc.org/sqlite, pure Go, so building needs no C compiler and cross-compiling is easy (the only direct third-party dependency) |
 | Front end | Server-rendered HTML, bevel.css plus app.css, no JavaScript |
 | Hosting | Behind a reverse proxy that handles TLS, deployed with hearth |
 
@@ -253,5 +253,4 @@ Each app gets its own commit, so a bad release can be rolled back per app with `
 ## 12. Open questions
 
 - **Domain.** Where the site will live, for example a subdomain like `dyk.khush.sh`.
-- **SQLite driver.** mattn/go-sqlite3 has no other dependencies and is fastest, but needs a C compiler to build. A pure-Go driver would make cross-compiling easy but brings in around ten more modules. Current choice: mattn.
 - **Earliest archive month.** January 2010 is the default. Older archives may use different page names or formatting; this needs checking on the first real ingest.

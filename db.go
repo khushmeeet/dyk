@@ -6,7 +6,7 @@ import (
 	"errors"
 	"math/rand/v2"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 // Cards are never deleted, only hidden, so card numbers and links stay
@@ -36,9 +36,11 @@ type card struct {
 }
 
 // openDB opens the database, creating it if needed. Write-ahead logging
-// lets pages keep reading while the ingest job writes.
+// lets pages keep reading while the ingest job writes. The pragmas run on
+// every new connection; busy_timeout goes first so the rest can wait for a
+// lock.
 func openDB(path string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", path+"?_journal_mode=WAL&_synchronous=NORMAL&_busy_timeout=5000")
+	db, err := sql.Open("sqlite", path+"?_pragma=busy_timeout(5000)&_pragma=journal_mode(WAL)&_pragma=synchronous(NORMAL)")
 	if err != nil {
 		return nil, err
 	}

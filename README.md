@@ -6,7 +6,7 @@ One Go program serves the pages and, in the background, fills a SQLite file from
 
 ## Run
 
-Needs Go and a C compiler (for the SQLite driver).
+Needs only Go. The SQLite driver is pure Go, so `CGO_ENABLED=0 GOOS=linux go build` cross-compiles from any machine.
 
 ```sh
 go run . -contact you@example.com    # http://localhost:8080
